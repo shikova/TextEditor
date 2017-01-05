@@ -3,7 +3,10 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowListener;
 import java.awt.print.PrinterException;
 import java.io.*;
@@ -25,6 +28,7 @@ public class TextEditor extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        addWindowListener(new WindowEvent());
         setUpFileMenu();
         setUpEditMenu();
         setUpOptionMenu();
@@ -33,6 +37,79 @@ public class TextEditor extends JFrame {
         setUpCenter();
     }
 
+    //Menu :
+        //File Menu
+    private void setUpFileMenu() {
+        //init
+        menuBar = new JMenuBar();
+        JMenu file = new JMenu("File");
+        JMenuItem open = new JMenuItem("Open");
+        JMenuItem _new = new JMenuItem("New");
+        JMenuItem save = new JMenuItem("Save");
+        JMenuItem save_as = new JMenuItem("Save As");
+        JMenuItem print = new JMenuItem("Print");
+        JMenuItem exit = new JMenuItem("Exit");
+        //Actions
+        open.addActionListener(e -> openFile());
+        _new.addActionListener(e -> newFile());
+        save.addActionListener(e -> saveFile());
+        save_as.addActionListener(e -> saveFileAs("Save file as ..."));
+        print.addActionListener(e -> printFile());
+        exit.addActionListener(e -> closeWindowTest());
+        //add shortcut keys
+        open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        _new.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        save_as.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
+        print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+        file.setMnemonic('F');
+        //add
+        file.add(open);
+        file.add(_new);
+        file.add(save);
+        file.add(save_as);
+        file.add(print);
+        file.add(exit);
+        menuBar.add(file);
+        add(menuBar, BorderLayout.NORTH);
+    }
+        //Edit Menu
+    private void setUpEditMenu()
+    {
+        //todo
+        JMenu edit=new JMenu("Edit");
+        JMenuItem copy=new JMenuItem(new DefaultEditorKit.CopyAction());
+        copy.setText("Copy");
+        JMenuItem paste=new JMenuItem(new DefaultEditorKit.PasteAction());
+        paste.setText("Paste");
+        JMenuItem cute=new JMenuItem(new DefaultEditorKit.CutAction());
+        cute.setText("Cute");
+        JMenuItem selectAll=new JMenuItem("Select All");
+        JMenuItem finde=new JMenuItem("Finde");
+        JMenuItem replace=new JMenuItem("Replace");
+        //add
+        edit.add(copy);
+        edit.add(paste);
+        edit.add(cute);
+        edit.add(selectAll);
+        edit.add(finde);
+        edit.add(replace);
+        //shortcut
+        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK));
+        cute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,ActionEvent.CTRL_MASK));
+        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.CTRL_MASK));
+        finde.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK));
+        edit.setMnemonic('E');
+
+        //actions
+        selectAll.addActionListener(e->selectAllText());
+        finde.addActionListener(e->findeText());
+        replace.addActionListener(e->replaceText());
+        menuBar.add(edit);
+    }
+        //Option Menu
     private void setUpOptionMenu()
     {
 
@@ -47,16 +124,34 @@ public class TextEditor extends JFrame {
         option.add(taille);
 
         //listener
-
+        option.setMnemonic('O');
         color.addActionListener(e->changeColor());
         font.addActionListener(e->changeFont());
-        taille.addActionListener(e->changeTaille());
+        taille.addActionListener(e->changeSize());
 
         menuBar.add(option);
 
     }
+        //Help Menu
+    private void setUpHelpMenu()
+    {
+        JMenu _help=new JMenu("Help");
+        JMenuItem about=new JMenuItem("About");
+        JMenuItem help=new JMenuItem("Help");
 
-    private void changeTaille() {
+        //add
+        _help.add(about);
+        _help.add(help);
+
+        //Listener
+        _help.setMnemonic('H');
+        about.addActionListener(e->aboutApp());
+        help.addActionListener(e->helpReq());
+        menuBar.add(_help);
+
+    }
+
+    private void changeSize() {
 
     }
 
@@ -68,73 +163,28 @@ public class TextEditor extends JFrame {
 
     }
 
-    private void setUpEditMenu()
-    {
-        //todo
-        JMenu edit=new JMenu("Edit");
-        JMenuItem copy=new JMenuItem("Copy");
-        JMenuItem paste=new JMenuItem("Paste");
-        JMenuItem cute=new JMenuItem("Cute");
-        JMenuItem selectAll=new JMenuItem("Select All");
-        JMenuItem finde=new JMenuItem("Finde");
-        JMenuItem replace=new JMenuItem("Replace");
-        //add
-        edit.add(copy);
-        edit.add(paste);
-        edit.add(cute);
-        edit.add(selectAll);
-        edit.add(finde);
-        edit.add(replace);
-        //addListener
-
-        copy.addActionListener(e->copyText());
-        paste.addActionListener(e->pasteText());
-        cute.addActionListener(e->cuteText());
-        selectAll.addActionListener(e->selectAllText());
-        finde.addActionListener(e->findeText());
-        replace.addActionListener(e->replaceText());
-        menuBar.add(edit);
-    }
-
     private void replaceText() {
     }
 
-    private void cuteText() {
-
-    }
 
     private void selectAllText() {
+        text_area.getTextArea().selectAll();
+    }
+
+    public Text_Area getText_area() {
+        return text_area;
     }
 
     private void findeText() {
+    new FindDialog(this,true).showDialog();
     }
 
 
-    private void pasteText() {
-    }
 
-    private void copyText() {
-    }
-
-    private void setUpHelpMenu()
-    {
-        JMenu _help=new JMenu("Help");
-        JMenuItem about=new JMenuItem("About");
-        JMenuItem help=new JMenuItem("Help");
-        
-        //add
-        _help.add(about);
-        _help.add(help);
-        
-        //Listener
-        
-        about.addActionListener(e->aboutApp());
-        help.addActionListener(e->helpReq());
-        menuBar.add(_help);
-        
-    }
 
     private void helpReq() {
+        JOptionPane.showMessageDialog(null,Constants.GITHUB_REPO_URL,"About",JOptionPane.INFORMATION_MESSAGE);
+
     }
 
     private void aboutApp() {
@@ -207,38 +257,6 @@ public class TextEditor extends JFrame {
         label_LnCl.setText(String.valueOf(linenum) + ':' + String.valueOf(columnnum));
     }
 
-//init the File Menu
-    private void setUpFileMenu() {
-        //init
-        menuBar = new JMenuBar();
-        JMenu file = new JMenu("File");
-        JMenuItem open = new JMenuItem("Open");
-        JMenuItem _new = new JMenuItem("New");
-        JMenuItem save = new JMenuItem("Save");
-        JMenuItem save_as = new JMenuItem("Save As");
-        JMenuItem print = new JMenuItem("Print");
-        JMenuItem exit = new JMenuItem("Exit");
-        file.add(open);
-        file.add(_new);
-        file.add(save);
-        file.add(save_as);
-        file.add(print);
-        file.add(exit);
-        //Actions
-        open.addActionListener(e -> openFile());
-        _new.addActionListener(e -> newFile());
-        save.addActionListener(e -> saveFile());
-        save_as.addActionListener(e -> saveFileAs("Save file as ..."));
-        print.addActionListener(e -> printFile());
-
-        exit.addActionListener(e -> {
-            closeWindowTest();
-        });
-        //add
-        menuBar.add(file);
-        add(menuBar, BorderLayout.NORTH);
-        addWindowListener(new WindowEvent());
-    }
 
     private void openFile() {
         JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home"));
