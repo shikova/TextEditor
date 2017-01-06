@@ -119,18 +119,16 @@ public class TextEditor extends JFrame {
         JMenu option=new JMenu("Option");
         JMenuItem  color=new JMenuItem("Color");
         JMenuItem font=new JMenuItem("Font");
-        JMenuItem taille=new JMenuItem("Taille");
 
         option.add(color);
         option.add(font);
-        option.add(taille);
 
         //listener
         option.setMnemonic('O');
         color.addActionListener(e->changeColor());
         font.addActionListener(e->changeFont());
-        taille.addActionListener(e->changeSize());
-
+        color.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
+        font.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
         menuBar.add(option);
 
     }
