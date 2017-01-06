@@ -1,4 +1,6 @@
 
+import ZoeloeSoft.projects.JFontChooser.JFontChooser;
+
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
@@ -86,26 +88,26 @@ public class TextEditor extends JFrame {
         JMenuItem cute=new JMenuItem(new DefaultEditorKit.CutAction());
         cute.setText("Cute");
         JMenuItem selectAll=new JMenuItem("Select All");
-        JMenuItem finde=new JMenuItem("Finde");
-        JMenuItem replace=new JMenuItem("Replace");
+
+        JMenuItem replace=new JMenuItem("Replace & Replace");
         //add
         edit.add(copy);
         edit.add(paste);
         edit.add(cute);
         edit.add(selectAll);
-        edit.add(finde);
+
         edit.add(replace);
         //shortcut
         copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
         paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK));
         cute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,ActionEvent.CTRL_MASK));
         selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.CTRL_MASK));
-        finde.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK));
+        replace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK));
         edit.setMnemonic('E');
 
         //actions
         selectAll.addActionListener(e->selectAllText());
-        finde.addActionListener(e->findeText());
+
         replace.addActionListener(e->replaceText());
         menuBar.add(edit);
     }
@@ -156,14 +158,22 @@ public class TextEditor extends JFrame {
     }
 
     private void changeFont() {
+        JFontChooser fontChooser=new JFontChooser(this);
+        fontChooser.showDialog();
+        getText_area().getTextArea().setFont(fontChooser.getFont());
 
     }
 
     private void changeColor() {
+        Color color =JColorChooser.showDialog(null,"Color Chooser",Color.white);
+        getText_area().getTextArea().setForeground(color);
+
 
     }
 
     private void replaceText() {
+        new ReplaceDialog(this,true).showDialog();
+
     }
 
 
@@ -175,9 +185,6 @@ public class TextEditor extends JFrame {
         return text_area;
     }
 
-    private void findeText() {
-    new FindDialog(this,true).showDialog();
-    }
 
 
 

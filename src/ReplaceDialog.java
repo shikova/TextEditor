@@ -1,12 +1,5 @@
-
 import javax.swing.*;
-import javax.swing.text.Highlighter;
 import java.awt.*;
-
-/**
- * Created by walid on 1/4/2017.
- */
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -14,32 +7,25 @@ import java.awt.event.KeyListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-@SuppressWarnings("serial")
-public class FindDialog extends JDialog implements ActionListener, KeyListener {
-
+/**
+ * Created by walid on 1/5/2017.
+ */
+public class ReplaceDialog extends JDialog implements ActionListener,KeyListener {
     TextEditor parent;
-    JLabel label;
-    JTextField textField;
+    JLabel label,label2;
+    JTextField textField,textField2;
     JCheckBox caseSensitive;
-    JButton find, close;
+    JButton find, close,replace;
     boolean finishedFinding = true;
     Matcher matcher;
 
-    public FindDialog(TextEditor parent, boolean modal) {
+    public ReplaceDialog(TextEditor parent, boolean modal) {
         super(parent, modal);
         this.parent = parent;
         getContentPane().addKeyListener(this);
         getContentPane().setFocusable(true);
         initComponents();
-        setTitle("Find");
+        setTitle("Replace");
         setLocationRelativeTo(parent);
         pack();
     }
@@ -57,6 +43,12 @@ public class FindDialog extends JDialog implements ActionListener, KeyListener {
         textField = new JTextField(15);
         panel1.add(textField);
         label.setLabelFor(textField);
+        label2=new JLabel("Replace");
+        label2.setDisplayedMnemonic('R');
+        panel1.add(label2);
+        textField2=new JTextField(15);
+        panel1.add(textField2);
+        label2.setLabelFor(textField2);
         add(panel1);
         JPanel panel2 = new JPanel();
         caseSensitive = new JCheckBox("Case sensitive");
@@ -64,14 +56,19 @@ public class FindDialog extends JDialog implements ActionListener, KeyListener {
         add(panel2);
         JPanel panel3 = new JPanel();
         find = new JButton("Find");
+        replace=new JButton("Replace");
         close = new JButton("Close");
         find.addActionListener(this);
+        replace.addActionListener(this);
         close.addActionListener(this);
         panel3.add(find);
+        panel3.add(replace);
         panel3.add(close);
         add(panel3);
         textField.addKeyListener(this);
+        textField2.addActionListener(this);
         find.addKeyListener(this);
+        replace.addActionListener(this);
         close.addKeyListener(this);
         caseSensitive.addKeyListener(this);
     }
@@ -107,9 +104,15 @@ public class FindDialog extends JDialog implements ActionListener, KeyListener {
             }
             pattern.append(input);
             find(pattern.toString());
-        } else if (cmd.equals("Close")) {
-            closeDialog();
         }
+        else if (cmd.equals("Replace")){
+            String temp=textField2.getText();
+            parent.getText_area().getTextArea().replaceSelection(temp);
+        }
+            else if (cmd.equals("Close")) {
+                closeDialog();
+            }
+
     }
 
     private void closeDialog() {
