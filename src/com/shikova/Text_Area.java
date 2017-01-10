@@ -1,3 +1,5 @@
+package com.shikova;
+
 import javax.swing.*;
 
 /**

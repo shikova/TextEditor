@@ -1,3 +1,4 @@
+package com.shikova;
 
 import ZoeloeSoft.projects.JFontChooser.JFontChooser;
 
@@ -13,7 +14,6 @@ import java.awt.event.WindowListener;
 import java.awt.print.PrinterException;
 import java.io.*;
 import java.util.Scanner;
-import java.util.StringJoiner;
 
 /**
  * Created by walid on 1/2/2017.
@@ -89,7 +89,7 @@ public class TextEditor extends JFrame {
         cute.setText("Cute");
         JMenuItem selectAll=new JMenuItem("Select All");
 
-        JMenuItem replace=new JMenuItem("Replace & Replace");
+        JMenuItem replace=new JMenuItem("Find & Replace");
         //add
         edit.add(copy);
         edit.add(paste);
@@ -151,9 +151,6 @@ public class TextEditor extends JFrame {
 
     }
 
-    private void changeSize() {
-
-    }
 
     private void changeFont() {
         JFontChooser fontChooser=new JFontChooser(this);
@@ -170,8 +167,10 @@ public class TextEditor extends JFrame {
     }
 
     private void replaceText() {
-        new ReplaceDialog(this,true).showDialog();
-
+        //new ReplaceDialog(this).showDialog();
+        //Todo
+        ReplaceDialog dialog=new ReplaceDialog(this);
+        dialog.setVisible(true);
     }
 
 
