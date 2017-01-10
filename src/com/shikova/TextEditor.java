@@ -7,12 +7,15 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultEditorKit;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowListener;
 import java.awt.print.PrinterException;
 import java.io.*;
+import java.util.Optional;
 import java.util.Scanner;
 
 /**
@@ -26,7 +29,7 @@ public class TextEditor extends JFrame {
     private boolean fileSaved;
 
     public TextEditor() {
-        super(Constants.APP_NAME);
+        super(Constants.str.APP_NAME);
         setSize(800, 600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -37,10 +40,11 @@ public class TextEditor extends JFrame {
         setUpHelpMenu();
         setUpStatuBar();
         setUpCenter();
+        setUpButtons();
     }
 
     //Menu :
-        //File Menu
+    //File Menu
     private void setUpFileMenu() {
         //init
         menuBar = new JMenuBar();
@@ -62,7 +66,7 @@ public class TextEditor extends JFrame {
         open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         _new.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        save_as.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
+        save_as.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
         print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
         exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
         file.setMnemonic('F');
@@ -74,22 +78,21 @@ public class TextEditor extends JFrame {
         file.add(print);
         file.add(exit);
         menuBar.add(file);
-        add(menuBar, BorderLayout.NORTH);
     }
-        //Edit Menu
-    private void setUpEditMenu()
-    {
-        //todo
-        JMenu edit=new JMenu("Edit");
-        JMenuItem copy=new JMenuItem(new DefaultEditorKit.CopyAction());
-        copy.setText("Copy");
-        JMenuItem paste=new JMenuItem(new DefaultEditorKit.PasteAction());
-        paste.setText("Paste");
-        JMenuItem cute=new JMenuItem(new DefaultEditorKit.CutAction());
-        cute.setText("Cute");
-        JMenuItem selectAll=new JMenuItem("Select All");
 
-        JMenuItem replace=new JMenuItem("Find & Replace");
+    //Edit Menu
+    private void setUpEditMenu() {
+        //todo
+        JMenu edit = new JMenu("Edit");
+        JMenuItem copy = new JMenuItem(new DefaultEditorKit.CopyAction());
+        copy.setText("Copy");
+        JMenuItem paste = new JMenuItem(new DefaultEditorKit.PasteAction());
+        paste.setText("Paste");
+        JMenuItem cute = new JMenuItem(new DefaultEditorKit.CutAction());
+        cute.setText("Cute");
+        JMenuItem selectAll = new JMenuItem("Select All");
+
+        JMenuItem replace = new JMenuItem("Find & Replace");
         //add
         edit.add(copy);
         edit.add(paste);
@@ -98,46 +101,46 @@ public class TextEditor extends JFrame {
 
         edit.add(replace);
         //shortcut
-        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
-        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK));
-        cute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,ActionEvent.CTRL_MASK));
-        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.CTRL_MASK));
-        replace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK));
+        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        cute.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+        replace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         edit.setMnemonic('E');
 
         //actions
-        selectAll.addActionListener(e->selectAllText());
+        selectAll.addActionListener(e -> selectAllText());
 
-        replace.addActionListener(e->replaceText());
+        replace.addActionListener(e -> replaceText());
         menuBar.add(edit);
     }
-        //Option Menu
-    private void setUpOptionMenu()
-    {
+
+    //Option Menu
+    private void setUpOptionMenu() {
 
         //todo
-        JMenu option=new JMenu("Option");
-        JMenuItem  color=new JMenuItem("Color");
-        JMenuItem font=new JMenuItem("Font");
+        JMenu option = new JMenu("Option");
+        JMenuItem color = new JMenuItem("Color");
+        JMenuItem font = new JMenuItem("Font");
 
         option.add(color);
         option.add(font);
 
         //listener
         option.setMnemonic('O');
-        color.addActionListener(e->changeColor());
-        font.addActionListener(e->changeFont());
-        color.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
-        font.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
+        color.addActionListener(e -> changeColor());
+        font.addActionListener(e -> changeFont());
+        color.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+        font.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
         menuBar.add(option);
 
     }
-        //Help Menu
-    private void setUpHelpMenu()
-    {
-        JMenu _help=new JMenu("Help");
-        JMenuItem about=new JMenuItem("About");
-        JMenuItem help=new JMenuItem("Help");
+
+    //Help Menu
+    private void setUpHelpMenu() {
+        JMenu _help = new JMenu("Help");
+        JMenuItem about = new JMenuItem("About");
+        JMenuItem help = new JMenuItem("Help");
 
         //add
         _help.add(about);
@@ -145,31 +148,30 @@ public class TextEditor extends JFrame {
 
         //Listener
         _help.setMnemonic('H');
-        about.addActionListener(e->aboutApp());
-        help.addActionListener(e->helpReq());
+        about.addActionListener(e -> aboutApp());
+        help.addActionListener(e -> helpReq());
         menuBar.add(_help);
 
     }
 
 
     private void changeFont() {
-        JFontChooser fontChooser=new JFontChooser(this);
+        JFontChooser fontChooser = new JFontChooser(this);
         fontChooser.showDialog();
         getText_area().getTextArea().setFont(fontChooser.getFont());
 
     }
 
     private void changeColor() {
-        Color color =JColorChooser.showDialog(null,"Color Chooser",Color.white);
+        Color color = JColorChooser.showDialog(null, "Color Chooser", Color.white);
         getText_area().getTextArea().setForeground(color);
 
 
     }
 
     private void replaceText() {
-        //new ReplaceDialog(this).showDialog();
-        //Todo
-        ReplaceDialog dialog=new ReplaceDialog(this);
+
+        ReplaceDialog dialog = new ReplaceDialog(this);
         dialog.setVisible(true);
     }
 
@@ -183,16 +185,13 @@ public class TextEditor extends JFrame {
     }
 
 
-
-
-
     private void helpReq() {
-        JOptionPane.showMessageDialog(null,Constants.GITHUB_REPO_URL,"About",JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, Constants.str.GITHUB_REPO_URL, "About", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
     private void aboutApp() {
-        JOptionPane.showMessageDialog(null,Constants.ABOUT_TEXT,"About",JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, Constants.str.ABOUT_TEXT, "About", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void setUpStatuBar() {
@@ -213,6 +212,7 @@ public class TextEditor extends JFrame {
 
     }
 
+    //Center
     private void setUpCenter() {
         text_area = new Text_Area();
         text_area.getTextArea().addCaretListener(e -> {
@@ -251,7 +251,7 @@ public class TextEditor extends JFrame {
             }
         });
         add(text_area, BorderLayout.CENTER);
-        this.setTitle("Untitled - " + Constants.APP_NAME);
+        this.setTitle("Untitled - " + Constants.str.APP_NAME);
         file = null;
         setFileSaved(false);
     }
@@ -271,7 +271,7 @@ public class TextEditor extends JFrame {
                 text_area.getTextArea().setText(readFile(file));
                 //ToDo change State.
                 setFileSaved(true);
-                this.setTitle(file.getName() + " - " + Constants.APP_NAME);
+                this.setTitle(file.getName() + " - " + Constants.str.APP_NAME);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                         e.getMessage(),
@@ -296,7 +296,7 @@ public class TextEditor extends JFrame {
 
     private void newFile() {
         text_area.getTextArea().setText("");
-        this.setTitle("Untitled - " + Constants.APP_NAME);
+        this.setTitle("Untitled - " + Constants.str.APP_NAME);
         file = null;
         //todo this.changed = true;
         setFileSaved(false);
@@ -347,7 +347,7 @@ public class TextEditor extends JFrame {
             PrintWriter writer = new PrintWriter(file);
             writer.println(text_area.getTextArea().getText());
             setFileSaved(true);
-            setTitle(file.getName() + " - " + Constants.APP_NAME);
+            setTitle(file.getName() + " - " + Constants.str.APP_NAME);
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "File not Found", JOptionPane.WARNING_MESSAGE);
         }
@@ -372,9 +372,9 @@ public class TextEditor extends JFrame {
         this.fileSaved = fileSaved;
         try {
             if (this.fileSaved) {
-                statuLabelString.setText(Constants.STAT_FILE_SAVED);
+                statuLabelString.setText(Constants.str.STAT_FILE_SAVED);
             } else {
-                statuLabelString.setText(Constants.STAT_FILE_NOT_SAVED);
+                statuLabelString.setText(Constants.str.STAT_FILE_NOT_SAVED);
             }
         } catch (Exception e) {
             //TODO
@@ -387,6 +387,7 @@ public class TextEditor extends JFrame {
         System.exit(0);
     }
 
+
     class WindowEvent implements WindowListener {
         @Override
         public void windowOpened(java.awt.event.WindowEvent e) {
@@ -395,7 +396,7 @@ public class TextEditor extends JFrame {
 
         @Override
         public void windowClosing(java.awt.event.WindowEvent e) {
-        closeWindowTest();
+            closeWindowTest();
         }
 
         @Override
@@ -422,6 +423,55 @@ public class TextEditor extends JFrame {
         public void windowDeactivated(java.awt.event.WindowEvent e) {
 
         }
+    }
+
+
+    private void setUpButtons()
+    {
+        JButton bNew, bOpen, bSave, bPrint, bCompile;
+        bNew = new JButton("New");
+        bOpen = new JButton("Open");
+        bSave = new JButton("Save");
+        bPrint = new JButton("Print");
+        bCompile = new JButton("Compile");
+        JPanel toolBar=new JPanel();
+        toolBar.add(bNew);
+        toolBar.add(bOpen);
+        toolBar.add(bSave);
+        toolBar.add(bPrint);
+        toolBar.add(bCompile);
+        //Listener
+        bNew.addActionListener(e->newFile());
+        bOpen.addActionListener(e-> openFile());
+        bSave.addActionListener(e->saveFile());
+        bPrint.addActionListener(e -> printFile());
+        bCompile.addActionListener(e->compile());
+
+        //
+        JPanel top=new JPanel();
+        top.setLayout(new GridLayout(2,1));
+        top.add(menuBar);
+        top.add(toolBar);
+        //end
+        add(top,BorderLayout.NORTH);
+    }
+
+    private void compile() {
+
+        String p=file.getPath();
+        String com="javac "+p;
+        try {
+            Process process=Runtime.getRuntime().exec(com);
+
+            process.waitFor();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
 
